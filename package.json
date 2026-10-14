@@ -1,0 +1,36 @@
+{
+  "name": "api-security-testing",
+  "version": "1.0.0",
+  "description": "Authorized-only API security testing harness: BOLA/IDOR detection across an authenticated session set, plus a rate-limit detection probe. Local mock server for self-contained demos.",
+  "main": "src/index.js",
+  "bin": {
+    "api-sec": "src/cli.js"
+  },
+  "scripts": {
+    "test": "node --test test/bola.test.js test/rate-limit.test.js test/cli.test.js test/server.test.js",
+    "demo": "node src/cli.js demo",
+    "bola": "node src/cli.js bola",
+    "ratelimit": "node src/cli.js ratelimit"
+  },
+  "keywords": [
+    "security",
+    "api",
+    "bola",
+    "idor",
+    "owasp-api",
+    "rate-limit",
+    "pentest"
+  ],
+  "author": "Priyanshu Kumar Thakur (Gravion)",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "src/",
+    "test/",
+    "examples/",
+    "README.md",
+    "LICENSE"
+  ]
+}

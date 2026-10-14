@@ -1,0 +1,37 @@
+{
+  "tool": "api-security-testing",
+  "generatedAt": "2026-10-14T07:02:09.299Z",
+  "meta": {
+    "demo": true
+  },
+  "bola": {
+    "detected": true,
+    "leakCount": 6,
+    "sampleCount": 9,
+    "byUser": {
+      "alice": {
+        "sent": 3,
+        "leaked": 2
+      },
+      "bob": {
+        "sent": 3,
+        "leaked": 2
+      },
+      "eve": {
+        "sent": 3,
+        "leaked": 2
+      }
+    }
+  },
+  "rateLimit": {
+    "detected": true,
+    "sent": 20,
+    "succeeded": 5,
+    "throttled": 15,
+    "statusCounts": {
+      "200": 5,
+      "429": 15
+    },
+    "summary": "Detected throttling: 15/20 requests returned a throttle status. first 429 at request #6"
+  }
+}
