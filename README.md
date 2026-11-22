@@ -1,5 +1,9 @@
 # API Security Testing
 
+![Demo](docs/demo.png)
+
+*Demo: the BOLA / cross-tenant probe running end-to-end against the bundled local mock API.*
+
 An **authorized-only** API security testing harness. Two focused
 detectors — a BOLA / cross-tenant leak probe and a rate-limit probe —
 plus a small local mock server that simulates a vulnerable API so the
