@@ -1,5 +1,7 @@
 # API Security Testing
 
+[![CI](https://github.com/gravion-ux/api-security-testing/actions/workflows/ci.yml/badge.svg)](https://github.com/gravion-ux/api-security-testing/actions/workflows/ci.yml)
+
 ![Demo](docs/demo.png)
 
 *Demo: the BOLA / cross-tenant probe running end-to-end against the bundled local mock API.*
