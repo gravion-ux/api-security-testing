@@ -3,6 +3,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { spawnSync } = require('node:child_process');
+const fs = require('node:fs');
+const os = require('node:os');
 const path = require('node:path');
 
 const CLI = path.join(__dirname, '..', 'src', 'cli.js');
@@ -38,8 +40,23 @@ test('CLI: ratelimit without --url exits 2', () => {
 });
 
 test('CLI: demo runs end-to-end and exits 0', () => {
-  const r = run(['demo']);
+  // The report is written to a temporary file, not into the repository, so a
+  // test run never leaves the working tree dirty.
+  const tmp = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'api-sec-test-')), 'report.json');
+  const r = run(['demo', '--out', tmp]);
   assert.equal(r.status, 0, `stderr: ${r.stderr}`);
   assert.match(r.stdout, /BOLA:/);
   assert.match(r.stdout, /Rate-limit:/);
+  assert.ok(fs.existsSync(tmp), 'the demo report must be written where --out said');
+
+  const report = JSON.parse(fs.readFileSync(tmp, 'utf-8'));
+  assert.equal(report.meta.demo, true);
+  assert.equal(report.bola.detected, true);
+  assert.equal(report.rateLimit.detected, true);
+});
+
+test('CLI: demo rejects an unknown flag with exit 2', () => {
+  const r = run(['demo', '--banana']);
+  assert.equal(r.status, 2);
+  assert.match(r.stderr, /unknown flag/);
 });

@@ -4,7 +4,7 @@
 /**
  * Command-line entry point for api-security-testing.
  *
- *   api-sec demo                          # boots a BOLA-vulnerable mock and probes it
+ *   api-sec demo [--out <file>]         # boots a BOLA-vulnerable mock and probes it
  *   api-sec bola --url <template>         # run a BOLA probe against an authorized target
  *   api-sec ratelimit --url <url>         # run a rate-limit probe against an authorized target
  *
@@ -22,14 +22,15 @@ const { makeServer, renderReport } = require('./index');
 const HELP = `api-sec — authorized API security testing harness
 
 Usage:
-  api-sec demo
+  api-sec demo [--out <file>]
   api-sec bola --url <url-template> [--id 1 2 3] [--token user:tok ...]
   api-sec ratelimit --url <url> [--token <bearer>] [--total N] [--concurrency N]
   api-sec --help
 
 Notes:
   All probes are read-only. The demo command boots a local mock
-  server on 127.0.0.1 and tears it down before exit.
+  server on 127.0.0.1 and tears it down before exit. The demo report
+  is written to api-sec-report.json unless --out says otherwise.
 `;
 
 async function main(argv) {
@@ -39,14 +40,17 @@ async function main(argv) {
     return 0;
   }
   const cmd = args[0];
-  if (cmd === 'demo') return runDemo();
+  if (cmd === 'demo') return runDemo(args.slice(1));
   if (cmd === 'bola') return runBola(args.slice(1));
   if (cmd === 'ratelimit') return runRateLimit(args.slice(1));
   process.stderr.write(`Unknown command: ${cmd}\n`);
   return 2;
 }
 
-async function runDemo() {
+async function runDemo(args) {
+  const opts = parseDemoArgs(args);
+  if (!opts.ok) { process.stderr.write(opts.error + '\n'); return 2; }
+
   // Boot a BOLA-vulnerable mock on a free port
   const port = 4701;
   const server = makeServer('bola', { port });
@@ -76,7 +80,7 @@ async function runDemo() {
     server.close();
 
     const report = renderReport(bolaResult, rateResult, { demo: true });
-    const out = path.resolve('api-sec-report.json');
+    const out = path.resolve(opts.out);
     fs.writeFileSync(out, JSON.stringify(report, null, 2));
     process.stdout.write(`Wrote ${out}\n`);
     process.stdout.write(`BOLA: ${report.bola.leakCount} leaks across ${report.bola.sampleCount} samples (detected=${report.bola.detected})\n`);
@@ -113,6 +117,16 @@ async function runRateLimit(args) {
   });
   process.stdout.write(JSON.stringify(result, null, 2));
   return 0;
+}
+
+function parseDemoArgs(args) {
+  const out = { ok: true, out: 'api-sec-report.json' };
+  for (let i = 0; i < args.length; i += 1) {
+    const a = args[i];
+    if (a === '--out') { out.out = args[++i] || 'api-sec-report.json'; continue; }
+    return { ok: false, error: `unknown flag: ${a}` };
+  }
+  return out;
 }
 
 function parseBolaArgs(args) {

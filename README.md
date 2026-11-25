@@ -37,7 +37,7 @@ You need Node.js 18+ (no external dependencies).
 ```bash
 # 1. run the demo end-to-end (boots local mock servers on 127.0.0.1)
 npm run demo
-# → writes ./api-sec-report.json
+# → writes ./api-sec-report.json   (use --out <file> to write it elsewhere)
 # → prints:
 #     BOLA: 6 leaks across 9 samples (detected=true)
 #     Rate-limit: 13 throttled of 20 requests (detected=true)
